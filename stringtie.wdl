@@ -3,50 +3,60 @@
 workflow QUANTIFICATION {
   Array[File] bams
   File ref_gtf
-  Int readLength
+  Int read_length
 
   String out_dir
 
   Int nthread=1
-  Int machine_mem_gb = 4
+  Int machine_mem_gb = 10
   Int disk_space_gb = 50
   Boolean use_ssd = false
   String sversion = "latest"
 
-  scatter (i range(length(bams))) {
+  scatter (bam in bams) {
     call STRINGTIE as STRINGTIE_A {
       input:
-        indexedBam = bams[i]
-        annonovel = "annotated"
-        ref_gtf = ref_gtf
+        bam = bam,
+        ref_gtf = ref_gtf,
+        read_length = read_length,
 
-        machine_mem_gb = machine_mem_gb
-        disk_space_gb = disk_space_gb
-        use_ssd = use_ssd
+        annonovel = "annotated",
+
+        nthread = nthread,
+        machine_mem_gb = machine_mem_gb,
+        disk_space_gb = disk_space_gb,
+        use_ssd = use_ssd,
         sversion = sversion
     }
   }
 
   call PREPDE as PREPDE_A {
     input:
-      gtfs = STRINGTIE_A.dgeGtf
+      dgeGtfs = STRINGTIE_A.dgeGtf,
+      names = STRINGTIE_A.samplename,
 
-      machine_mem_gb = machine_mem_gb
-      disk_space_gb = disk_space_gb
-      use_ssd = use_ssd
+      ref_gtf = ref_gtf,
+      read_length = read_length,
+
+      annonovel = "annotated",
+
+      nthread = nthread,
+      # machine_mem_gb = machine_mem_gb,
+      # disk_space_gb = disk_space_gb,
+      machine_mem_gb = 500,
+      disk_space_gb = 1000,
+      use_ssd = use_ssd,
       sversion = sversion
   }
-
-  call STRINGTIEMERGE {
-    input:
-      gtfs = STRINGTIE_A.gtf
+  output {
+    File gtfs = PREPDE_A.gtfs
+    File samples = PREPDE_A.samples
+    File sample_list = PREPDE_A.sample_list
+    File gene_count = PREPDE_A.gene_count
+    File transcript_count = PREPDE_A.transcript_count
   }
 
-  # scatter (i range(length(bams))) {
-  #   call STRINGTIE as STRINGTIE_N
-  # }
 
-  # call PREPDE as PREPDE_N
 
 
   meta {
@@ -58,9 +68,11 @@ workflow QUANTIFICATION {
 }
 
 task STRINGTIE {
-  File indexedBam
-  String annonovel
+  File bam
   File ref_gtf
+  Int read_length
+
+  String annonovel
 
   Int nthread
   Int machine_mem_gb
@@ -68,16 +80,23 @@ task STRINGTIE {
   Boolean use_ssd
   String sversion
 
-  command {
+  String name = basename(bam, ".Aligned.sortedByCoord.out.patched.md.bam")
 
-    name=${indexedBam%.bam}
-    stringtie ${indexedBam} -G ${ref_gtf} -o ${name}.${annonovel}.gtf -a 8 -p ${nthread}
-    stringtie ${indexedBam} -G ${ref_gtf} -o ${name}.${annonovel}_for_DGE.gtf -a 8 -p ${nthread}
+
+  command {
+    # echo "stringtie ${bam} -G ${ref_gtf} -o ${name}.${annonovel}.gtf -a 8 -p ${nthread}" > "${name}.${annonovel}.gtf"
+    # echo "stringtie ${bam} -G ${ref_gtf} -o ${name}.${annonovel}_for_DGE.gtf -a 8 -p ${nthread}" > "${name}.${annonovel}_for_DGE.gtf"
+
+    # formal code
+    stringtie ${bam} -G ${ref_gtf} -o ${name}.${annonovel}.gtf -a 8 -p ${nthread}
+    stringtie ${bam} -G ${ref_gtf} -o ${name}.${annonovel}_for_DGE.gtf -a 8 -p ${nthread}
+
   }
 
   output {
-    File gtf = ${name}.${annonovel}.gtf
-    File dgeGtf = ${name}.${annonovel}_for_DGE.gtf
+    String samplename = "${name}"
+    File gtf = "${name}.${annonovel}.gtf"
+    File dgeGtf = "${name}.${annonovel}_for_DGE.gtf"
   }
 
   runtime {
@@ -89,10 +108,13 @@ task STRINGTIE {
 }
 
 task PREPDE {
-  Array[File] gtfs
-  String annonovel
+  Array[File] dgeGtfs
+  Array[String] names
 
-  Int readLength
+  File ref_gtf
+  Int read_length
+
+  String annonovel
 
   Int nthread
   Int machine_mem_gb
@@ -101,16 +123,27 @@ task PREPDE {
   String sversion
 
   command {
-    # echo "${gtf.join("\n").toString().replace(".${annonovel}_for_DGE.gtf", "")}" > samples.txt
-    for i
-    # echo "${gtf.join("\n")}" > gtfs.txt
-    for f in ${sep=" " gtfs}; do echo ${f%_for_DGE.gtf};done
+    echo ${sep="," names} | sed 's/,/\n/g' > samples.txt
+    echo ${sep="," dgeGtfs} | sed 's/,/\n/g' > gtfs.txt
     paste -d ' ' samples.txt gtfs.txt > sample_lst.txt
-    prepDE.py \
-      -i sample_lst.txt \
-      -l ${readLength} \
-      -g ${annonovel}_gene_count_matrix.csv \
-      -t ${annonovel}_transcript_count_matrix.csv
+
+    # echo "prepDE.py -i sample_lst.txt -l ${read_length} -g ${annonovel}_gene_count_matrix.csv -t ${annonovel}_transcript_count_matrix.csv" > ${annonovel}_gene_count_matrix.csv
+
+    # echo "prepDE.py -i sample_lst.txt -l ${read_length} -g ${annonovel}_gene_count_matrix.csv -t ${annonovel}_transcript_count_matrix.csv" > ${annonovel}_transcript_count_matrix.csv
+
+
+    # formal code
+    prepDE.py -i sample_lst.txt -l ${read_length} -g ${annonovel}_gene_count_matrix.csv -t ${annonovel}_transcript_count_matrix.csv
+
+
+
+  }
+  output {
+    File gtfs = "gtfs.txt"
+    File samples = "samples.txt"
+    File sample_list = "sample_lst.txt"
+    File gene_count = "${annonovel}_gene_count_matrix.csv"
+    File transcript_count = "${annonovel}_transcript_count_matrix.csv"
   }
 
   runtime {
@@ -121,14 +154,14 @@ task PREPDE {
   }
 }
 
-task STRINGTIEMERGE {
-  Array[File] gtfs
+# task STRINGTIEMERGE {
+#   Array[File] gtfs
 
 
-  runtime {
-    docker: "chunjiesamliu/stringite-nf:" + sversion
-    memory: machine_mem_gb + " GB"
-    disks: "local-disk " + disk_space_gb + if use_ssd then " SSD" else " HDD"
-    cpu: nthread
-  }
-}
+#   runtime {
+#     docker: "chunjiesamliu/stringite-nf:" + sversion
+#     memory: machine_mem_gb + " GB"
+#     disks: "local-disk " + disk_space_gb + if use_ssd then " SSD" else " HDD"
+#     cpu: nthread
+#   }
+# }

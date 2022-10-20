@@ -1,0 +1,14 @@
+{
+  "QUANTIFICATION.read_length": 76,
+  "QUANTIFICATION.bams": [
+    "/home/liuc9/github/stringtie-wdl/tests/GTEX-1117F-0426-SM-5EGHI.Aligned.sortedByCoord.out.patched.md.bam",
+    "/home/liuc9/github/stringtie-wdl/tests/GTEX-1117F-3026-SM-5GZYU.Aligned.sortedByCoord.out.patched.md.bam"
+  ],
+  "QUANTIFICATION.ref_gtf": "/home/liuc9/github/stringtie-wdl/tests/ref.gtf",
+  "QUANTIFICATION.out_dir": "cjout",
+  "QUANTIFICATION.use_ssd": false,
+  "QUANTIFICATION.disk_space_gb": 500,
+  "QUANTIFICATION.sversion": "latest",
+  "QUANTIFICATION.machine_mem_gb": 10,
+  "QUANTIFICATION.nthread": 10
+}

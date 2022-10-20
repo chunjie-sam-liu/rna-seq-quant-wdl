@@ -1,0 +1,8 @@
+version: 1.2
+workflows:
+  - subclass: WDL
+    primaryDescriptorPath: /stringtie.wdl
+    testParameterFiles:
+      - /test_bam_default.json
+    authors:
+      - orcid: 0000-0002-3008-3375
