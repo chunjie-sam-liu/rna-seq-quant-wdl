@@ -89,7 +89,7 @@ task STRINGTIE {
 
     # formal code
     stringtie ${bam} -G ${ref_gtf} -o ${name}.${annonovel}.gtf -a 8 -p ${nthread}
-    stringtie ${bam} -G ${ref_gtf} -o ${name}.${annonovel}_for_DGE.gtf -a 8 -p ${nthread}
+    stringtie ${bam} -G ${ref_gtf} -o ${name}.${annonovel}_for_DGE.gtf -a 8 -e -p ${nthread}
 
   }
 
