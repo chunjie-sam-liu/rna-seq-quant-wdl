@@ -100,7 +100,7 @@ task STRINGTIE {
   }
 
   runtime {
-    docker: "chunjiesamliu/stringite-nf:latest"
+    docker: "chunjiesamliu/stringtie-nf:latest"
     memory: machine_mem_gb + " GB"
     disks: "local-disk " + disk_space_gb + if use_ssd then " SSD" else " HDD"
     cpu: nthread
@@ -147,7 +147,7 @@ task PREPDE {
   }
 
   runtime {
-    docker: "chunjiesamliu/stringite-nf:" + sversion
+    docker: "chunjiesamliu/stringtie-nf:latest"
     memory: machine_mem_gb + " GB"
     disks: "local-disk " + disk_space_gb + if use_ssd then " SSD" else " HDD"
     cpu: nthread
