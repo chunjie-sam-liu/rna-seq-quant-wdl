@@ -1,7 +1,7 @@
 version: 1.2
 workflows:
   - subclass: WDL
-    primaryDescriptorPath: /salmon.wdl
+    primaryDescriptorPath: /cufflinks.wdl
     testParameterFiles:
       - /test_bam_default.json
     authors:
