@@ -1,7 +1,7 @@
 version: 1.2
 workflows:
   - subclass: WDL
-    primaryDescriptorPath: /stringtie.wdl
+    primaryDescriptorPath: /salmon.wdl
     testParameterFiles:
       - /test_bam_default.json
     authors:
