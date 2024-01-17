@@ -1,5 +1,5 @@
 
-FROM mambaorg/mambaorg/micromamba:1.5.6
+FROM mambaorg/micromamba:1.5.6
 LABEL maintainer="Chun-Jie Liu <chunjie.sam.liu@gmail.com>"
 # kallisto.salmon.cufflinks
 COPY --chown=$MAMBA_USER:$MAMBA_USER env.yaml /tmp/env.yaml
