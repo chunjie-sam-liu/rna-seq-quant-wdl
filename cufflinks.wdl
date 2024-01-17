@@ -93,19 +93,14 @@ task GATHREQUANT {
   Array[File] isoforms
 
   String output_dir
+
   command {
 
-    echo "Gathering results"
     mkdir -p output_dir
-    for file in ${sep=" " transcripts}; do
-      cp ${file} ${output_dir}
-    done
-    for file in ${sep=" " genes}; do
-      cp ${file} ${output_dir}
-    done
-    for file in ${sep=" " isoforms}; do
-      cp ${file} ${output_dir}
-    done
+
+    for file in ${sep=" " transcripts}; do cp $file ${output_dir}; done
+    for file in ${sep=" " genes}; do cp $file ${output_dir}; done
+    for file in ${sep=" " isoforms}; do cp $file ${output_dir}; done
 
     tar -czvf ${output_dir}.tar.gz ${output_dir}
 
