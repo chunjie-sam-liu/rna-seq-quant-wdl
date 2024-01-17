@@ -11,6 +11,7 @@ workflow QUANTIFICATION {
   Int machine_mem_gb = 16
   Int disk_space_gb = 100
   Boolean use_ssd = false
+  String docker_image = "chunjiesamliu/rna-seq-quant-wdl"
   String docker_version = "latest"
 
   scatter (bam in bams) {
@@ -23,6 +24,7 @@ workflow QUANTIFICATION {
         machine_mem_gb = machine_mem_gb,
         disk_space_gb = disk_space_gb,
         use_ssd = use_ssd,
+        docker_image = docker_image,
         docker_version = docker_version
     }
   }
@@ -36,6 +38,7 @@ workflow QUANTIFICATION {
       machine_mem_gb = machine_mem_gb,
       disk_space_gb = disk_space_gb,
       use_ssd = use_ssd,
+      docker_image = docker_image,
       docker_version = docker_version
   }
 
@@ -60,6 +63,7 @@ task CUFFLINKS {
   Int machine_mem_gb = 16
   Int disk_space_gb = 100
   Boolean use_ssd = false
+  String docker_image = "chunjiesamliu/rna-seq-quant-wdl"
   String docker_version = "latest"
 
 
@@ -79,7 +83,7 @@ task CUFFLINKS {
   }
 
   runtime {
-    docker: "chunjiesamliu/rna-seq-quant-wdl:${docker_version}"
+    docker: "${docker_image}:${docker_version}"
     memory: "${machine_mem_gb} GB"
     disks: "local-disk " + disk_space_gb + if use_ssd then " SSD" else " HDD"
     cpu: nthread
@@ -104,6 +108,7 @@ task GATHREQUANT {
   Int machine_mem_gb = 16
   Int disk_space_gb = 100
   Boolean use_ssd = false
+  String docker_image = "chunjiesamliu/rna-seq-quant-wdl"
   String docker_version = "latest"
 
   command {
@@ -118,7 +123,7 @@ task GATHREQUANT {
 
   }
   runtime {
-    docker: "chunjiesamliu/rna-seq-quant-wdl:${docker_version}"
+    docker: "${docker_image}:${docker_version}"
     memory: "${machine_mem_gb} GB"
     disks: "local-disk " + disk_space_gb + if use_ssd then " SSD" else " HDD"
     cpu: nthread
