@@ -2,7 +2,7 @@
 
 workflow QUANTIFICATION {
   Array[File] bams
-  File salmon_index
+  String salmon_index
   String output_dir
 
   Int nthread = 10
@@ -46,7 +46,7 @@ workflow QUANTIFICATION {
 
 task SALMON {
   File bam
-  File salmon_index
+  String salmon_index
 
   Int nthread = 10
 
