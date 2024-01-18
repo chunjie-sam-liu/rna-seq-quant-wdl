@@ -113,7 +113,7 @@ task GATHREQUANT {
 
   command {
 
-    mkdir -p output_dir
+    mkdir -p ${output_dir}
 
     for file in ${sep=" " transcripts}; do mv $file ${output_dir}; done
     for file in ${sep=" " genes}; do mv $file ${output_dir}; done

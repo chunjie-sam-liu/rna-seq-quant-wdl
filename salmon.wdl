@@ -110,7 +110,7 @@ task GATHREQUANT {
   command {
 
     echo "Gathering results"
-    mkdir -p output_dir
+    mkdir -p ${output_dir}
     for file in ${sep=" " transcripts}; do mv $file ${output_dir}; done
 
     tar -czvf ${output_dir}.tar.gz ${output_dir}
