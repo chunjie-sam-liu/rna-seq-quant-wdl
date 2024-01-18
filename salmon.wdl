@@ -2,7 +2,7 @@
 
 workflow QUANTIFICATION {
   Array[File] bams
-  String salmon_index
+  File salmon_index_tar_gz
   String output_dir
 
   Int nthread = 10
@@ -18,7 +18,7 @@ workflow QUANTIFICATION {
     call SALMON {
       input:
         bam = bam,
-        salmon_index = salmon_index,
+        salmon_index_tar_gz = salmon_index_tar_gz,
 
         nthread = nthread,
         machine_mem_gb = machine_mem_gb,
@@ -54,7 +54,8 @@ workflow QUANTIFICATION {
 
 task SALMON {
   File bam
-  String salmon_index
+  File salmon_index_tar_gz
+  String salmon_index = basename(salmon_index_tar_gz, ".tar.gz")
 
   Int nthread = 10
 
@@ -68,6 +69,7 @@ task SALMON {
   String stripped_bam = basename(bam, ".bam")
 
   command {
+    tar -zxvf ${salmon_index_tar_gz}
     samtools bam2fq -@ ${nthread} ${bam} > ${stripped_bam}.fastq
     salmon quant \
       -i ${salmon_index} \
