@@ -8,8 +8,8 @@ workflow QUANTIFICATION {
   Int nthread = 10
 
 
-  Int machine_mem_gb = 30
-  Int disk_space_gb = 100
+  Int machine_mem_gb = 50
+  Int disk_space_gb = 200
   Boolean use_ssd = false
   String docker_image = "chunjiesamliu/rna-seq-quant-wdl"
   String docker_version = "latest"
