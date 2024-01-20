@@ -6,5 +6,15 @@ COPY --chown=$MAMBA_USER:$MAMBA_USER env.yaml /tmp/env.yaml
 RUN micromamba install -y -n base -f /tmp/env.yaml && \
   micromamba clean --all --yes
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN git clone https://github.com/pachterlab/kallisto.git \
+  && cd kallisto \
+  && git checkout v0.50.0  \
+  && mkdir build \
+  && cd build \
+  && cmake .. \
+  && make \
+  && make install
 
 ENV PATH /opt/conda/bin/:$PATH
