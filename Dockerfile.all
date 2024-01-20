@@ -2,16 +2,22 @@
 FROM mambaorg/micromamba:1.5.6
 LABEL maintainer="Chun-Jie Liu <chunjie.sam.liu@gmail.com>"
 # kallisto.salmon.cufflinks
-
+COPY --chown=$MAMBA_USER:$MAMBA_USER env.yaml /tmp/env.yaml
+RUN micromamba install -y -n base -f /tmp/env.yaml && \
+  micromamba clean --all --yes
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
-
 ARG DEBIAN_FRONTEND=noninteractive
 
-COPY --chown=$MAMBA_USER:$MAMBA_USER env.yaml /tmp/env.yaml
+ARG MAMBA_USER=mambauser
+ARG MAMBA_USER_ID=57439
+ARG MAMBA_USER_GID=57439
+ENV MAMBA_USER=$MAMBA_USER
+ENV MAMBA_USER_ID=$MAMBA_USER_ID
+ENV MAMBA_USER_GID=$MAMBA_USER_GID
+
+USER root
 
 RUN apt-get update && apt-get install -y build-essential cmake zlib1g-dev libhdf5-dev wget git
-
-RUN micromamba install -y -n base -f /tmp/env.yaml && micromamba clean --all --yes
 
 RUN git clone https://github.com/pachterlab/kallisto.git \
   && cd kallisto \
@@ -23,3 +29,5 @@ RUN git clone https://github.com/pachterlab/kallisto.git \
   && make install
 
 ENV PATH /opt/conda/bin/:$PATH
+
+USER $MAMBA_USER
