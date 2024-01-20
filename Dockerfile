@@ -1,1 +1,1 @@
-Dockerfile.kallisto
+Dockerfile.all
