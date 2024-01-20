@@ -9,7 +9,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 COPY --chown=$MAMBA_USER:$MAMBA_USER env.yaml /tmp/env.yaml
 
-RUN apt-get update && apt-get install -y build-essential cmake zlib1g-dev libhdf5-dev wget git
+RUN apt update && apt install -y build-essential cmake zlib1g-dev libhdf5-dev wget git
 
 RUN micromamba install -y -n base -f /tmp/env.yaml && micromamba clean --all --yes
 
